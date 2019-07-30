@@ -6,7 +6,9 @@ def get_access_token_url():
     load_dotenv()
     client_id = os.getenv('CLIENT_ID')
     url = 'https://oauth.vk.com/authorize'
-    payload = {'client_id': client_id, 'scope': ['photos', 'groups', 'wall', 'offline']}
+    payload = {'client_id': client_id,
+                'scope': ['photos', 'groups', 'wall', 'offline'],
+                'response_type': 'token'}
     response = requests.get(url, params=payload)
     return response.url
     
