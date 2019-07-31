@@ -61,6 +61,19 @@ def upload_image(url, image):
     else:
         raise requests.exceptions.HTTPError
 
+def save_wall_photo(server, photo, hash_):
+    url = 'https://api.vk.com/method/photos.saveWallPhoto'
+    payload = {
+        'server': server,
+        'photo': photo,
+        'hash': hash_,
+        'group_id': GROUP_ID,
+        'access_token': ACCESS_TOKEN,
+        'v': V
+    }
+    response = requests.get(url, params=payload)
+    return response.json()
+
 
 def main():
     random_image_number = random.randint(1, 1000)
@@ -69,6 +82,7 @@ def main():
     save_image(url, image_name)
     upload_url = get_upload_url()
     server, photo, hash_ = upload_image(upload_url, image_name)
+    save_wall_photo(server, photo, hash_)
 
 
 if __name__ == "__main__":
