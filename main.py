@@ -44,13 +44,32 @@ def get_upload_url():
     return upload_url
 
 
+def upload_image(url, image):
+    image_file_descriptor = open(image, 'rb')
+    files = {'photo': image_file_descriptor}
+    response = requests.post(url, files=files)
+    image_file_descriptor.close()
+
+    response_json = response.json()
+    server = response_json.get('server')
+    photo = response_json.get('photo')
+    hash_ = response_json.get('hash')
+
+    if all((server, photo, hash_)):
+        logging.info('Server, photo, hash received')
+        return server, photo, hash_
+    else:
+        raise requests.exceptions.HTTPError
+
+
 def main():
     random_image_number = random.randint(1, 1000)
     url, title, alt = get_comics_data(random_image_number)
     image_name = url.split('/')[-1]
     save_image(url, image_name)
     upload_url = get_upload_url()
-    print(upload_url)
+    server, photo, hash_ = upload_image(upload_url, image_name)
+
 
 if __name__ == "__main__":
     load_dotenv()
