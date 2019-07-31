@@ -11,7 +11,7 @@ def get_comics_data(comics_number):
     url = f'https://xkcd.com/{comics_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
-    logging.info(f'Response received')
+    logging.info('Response received')
     json = response.json()
     url = json.get('img')
     title = json.get('safe_title')
@@ -30,6 +30,7 @@ def save_image(url, name):
         image_file.write(image)
     logging.info(f'Saved <{name}>')
 
+
 def get_upload_url():
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
     payload = {'access_token': ACCESS_TOKEN,
@@ -39,6 +40,7 @@ def get_upload_url():
     response = requests.get(url, params=payload)
     response_json = response.json()
     upload_url = response_json['response']['upload_url']
+    logging.info('Upload URL received')
     return upload_url
 
 
@@ -47,14 +49,14 @@ def main():
     url, title, alt = get_comics_data(random_image_number)
     image_name = url.split('/')[-1]
     save_image(url, image_name)
-
+    upload_url = get_upload_url()
+    print(upload_url)
 
 if __name__ == "__main__":
     load_dotenv()
     GROUP_ID = os.getenv('GROUP_ID')
     ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
     V = 5.101
-    # main()
-    upload_url = get_upload_url()
-    print(upload_url)
+    main()
+    
     
