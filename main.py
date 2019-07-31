@@ -72,22 +72,23 @@ def save_wall_photo(server, photo, hash_):
         'access_token': ACCESS_TOKEN,
         'v': V
     }
-    response = requests.get(url, params=payload)
+    response = requests.post(url, params=payload)
     response_json = response.json()
     photo_id = response_json['response'][0]['id']
     owner_id = response_json['response'][0]['owner_id']
     return photo_id, owner_id
 
 
-def post_wall(photo_id, owner_id):
+def post_wall(photo_id, owner_id, message):
     url = 'https://api.vk.com/method/wall.post'
     payload = {
         'owner_id': f'-{GROUP_ID}',
         'access_token': ACCESS_TOKEN,
         'attachments': f'photo{owner_id}_{photo_id}',
+        'message': message,
         'v': V
     }
-    response = requests.get(url, params=payload)
+    response = requests.post(url, params=payload)
     error = response.json().get('error')
     if not error:
         logging.info('Image successfully posted')
@@ -104,7 +105,11 @@ def main():
     upload_url = get_upload_url()
     server, photo, hash_ = upload_image(upload_url, image_name)
     photo_id, owner_id = save_wall_photo(server, photo, hash_)
-    post_wall(photo_id, owner_id)
+    message = f'{title}\n---\n{alt}'
+    post_wall(photo_id, owner_id, message)
+
+    os.remove(image_name)
+    logging.info('Image removed')
     
 
 if __name__ == "__main__":
@@ -113,5 +118,4 @@ if __name__ == "__main__":
     ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
     V = 5.101
     main()
-    
     
