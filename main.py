@@ -10,6 +10,7 @@ logging.basicConfig(level=logging.INFO, format='[%(levelname)s] - %(message)s')
 def get_total_comics_number():
     url = 'https://xkcd.com/info.0.json'
     response = requests.get(url)
+    response.raise_for_status()
     total_number = response.json().get('num')
     if total_number:
         logging.info(f'Total {total_number} comics')
@@ -22,15 +23,17 @@ def get_comics_data(comics_number):
     url = f'https://xkcd.com/{comics_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
-    logging.info('Response received')
     json = response.json()
     url = json.get('img')
     title = json.get('safe_title')
     alt = json.get('alt')
-    logging.info(f'Image URL: {url}')
-    logging.info(f'Title: {title}')
-    logging.info(f'Alt: {alt}')
-    return (url, title, alt)
+    if all((url, title, alt)):
+        logging.info(f'Image URL: {url}')
+        logging.info(f'Title: {title}')
+        logging.info(f'Alt: {alt}')
+        return (url, title, alt)
+    else:
+        raise requests.exceptions.HTTPError
 
 
 def save_image(url, name):
@@ -44,15 +47,20 @@ def save_image(url, name):
 
 def get_upload_url():
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
-    payload = {'access_token': ACCESS_TOKEN,
-               'group_id': GROUP_ID,
-               'v': V}
-
+    payload = {
+        'access_token': ACCESS_TOKEN,
+        'group_id': GROUP_ID,
+        'v': V
+        }
     response = requests.get(url, params=payload)
+    response.raise_for_status()
     response_json = response.json()
-    upload_url = response_json['response']['upload_url']
-    logging.info('Upload URL received')
-    return upload_url
+    if not response_json.get('error'):
+        upload_url = response_json['response']['upload_url']
+        logging.info('Upload URL received')
+        return upload_url
+    else:
+        raise requests.exceptions.HTTPError
 
 
 def upload_image(url, image):
@@ -60,6 +68,7 @@ def upload_image(url, image):
     files = {'photo': image_file_descriptor}
     response = requests.post(url, files=files)
     image_file_descriptor.close()
+    response.raise_for_status()
 
     response_json = response.json()
     server = response_json.get('server')
@@ -84,10 +93,14 @@ def save_wall_photo(server, photo, hash_):
         'v': V
     }
     response = requests.post(url, params=payload)
+    response.raise_for_status()
     response_json = response.json()
-    photo_id = response_json['response'][0]['id']
-    owner_id = response_json['response'][0]['owner_id']
-    return photo_id, owner_id
+    if not response_json.get('error'):
+        photo_id = response_json['response'][0]['id']
+        owner_id = response_json['response'][0]['owner_id']
+        return photo_id, owner_id
+    else:
+        raise requests.exceptions.HTTPError
 
 
 def post_wall(photo_id, owner_id, message):
@@ -100,6 +113,7 @@ def post_wall(photo_id, owner_id, message):
         'v': V
     }
     response = requests.post(url, params=payload)
+    response.raise_for_status()
     error = response.json().get('error')
     if not error:
         logging.info('Image successfully posted')
@@ -129,5 +143,8 @@ if __name__ == "__main__":
     GROUP_ID = os.getenv('GROUP_ID')
     ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
     V = 5.101
-    main()
+    try:
+        main()
+    except requests.exceptions.HTTPError as error:
+        logging.error(error)
     
