@@ -72,7 +72,27 @@ def save_wall_photo(server, photo, hash_):
         'v': V
     }
     response = requests.get(url, params=payload)
-    return response.json()
+    response_json = response.json()
+    photo_id = response_json['response'][0]['id']
+    owner_id = response_json['response'][0]['owner_id']
+    return photo_id, owner_id
+
+
+def post_wall(photo_id, owner_id):
+    url = 'https://api.vk.com/method/wall.post'
+    payload = {
+        'owner_id': f'-{GROUP_ID}',
+        'access_token': ACCESS_TOKEN,
+        'attachments': f'photo{owner_id}_{photo_id}',
+        'v': V
+    }
+    response = requests.get(url, params=payload)
+    error = response.json().get('error')
+    if not error:
+        logging.info('Image successfully posted')
+    else:
+        raise requests.exceptions.HTTPError
+
 
 
 def main():
@@ -80,9 +100,12 @@ def main():
     url, title, alt = get_comics_data(random_image_number)
     image_name = url.split('/')[-1]
     save_image(url, image_name)
+
     upload_url = get_upload_url()
     server, photo, hash_ = upload_image(upload_url, image_name)
-    save_wall_photo(server, photo, hash_)
+    photo_id, owner_id = save_wall_photo(server, photo, hash_)
+    post_wall(photo_id, owner_id)
+    
 
 
 if __name__ == "__main__":
