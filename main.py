@@ -61,6 +61,7 @@ def upload_image(url, image):
     else:
         raise requests.exceptions.HTTPError
 
+
 def save_wall_photo(server, photo, hash_):
     url = 'https://api.vk.com/method/photos.saveWallPhoto'
     payload = {
@@ -94,7 +95,6 @@ def post_wall(photo_id, owner_id):
         raise requests.exceptions.HTTPError
 
 
-
 def main():
     random_image_number = random.randint(1, 1000)
     url, title, alt = get_comics_data(random_image_number)
@@ -106,7 +106,6 @@ def main():
     photo_id, owner_id = save_wall_photo(server, photo, hash_)
     post_wall(photo_id, owner_id)
     
-
 
 if __name__ == "__main__":
     load_dotenv()
