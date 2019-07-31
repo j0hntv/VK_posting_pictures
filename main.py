@@ -30,6 +30,17 @@ def save_image(url, name):
         image_file.write(image)
     logging.info(f'Saved <{name}>')
 
+def get_upload_url():
+    url = 'https://api.vk.com/method/photos.getWallUploadServer'
+    payload = {'access_token': ACCESS_TOKEN,
+               'group_id': GROUP_ID,
+               'v': V}
+
+    response = requests.get(url, params=payload)
+    response_json = response.json()
+    upload_url = response_json['response']['upload_url']
+    return upload_url
+
 
 def main():
     random_image_number = random.randint(1, 1000)
@@ -42,5 +53,8 @@ if __name__ == "__main__":
     load_dotenv()
     GROUP_ID = os.getenv('GROUP_ID')
     ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
-    main()
+    V = 5.101
+    # main()
+    upload_url = get_upload_url()
+    print(upload_url)
     
