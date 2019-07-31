@@ -1,6 +1,6 @@
 # VK_posting_pictures
 
-Script for posting images from [xkcd.com](xkcd.com) to the group [VK](https://vk.com).
+Script for posting images from [xkcd.com](https://xkcd.com) to the group [VK](https://vk.com).
 
 Example: [xkcd_comics_fun](https://vk.com/xkcd_comics_fun)
 ### How to install
