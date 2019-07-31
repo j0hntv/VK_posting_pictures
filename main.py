@@ -109,7 +109,7 @@ def post_wall(photo_id, owner_id, message):
 
 def main():
     total_comics_number = get_total_comics_number()
-    random_image_number = random.randint(1, total_comics_number)
+    random_image_number = random.randint(1, total_comics_number+1)
     url, title, alt = get_comics_data(random_image_number)
     image_name = url.split('/')[-1]
     save_image(url, image_name)
