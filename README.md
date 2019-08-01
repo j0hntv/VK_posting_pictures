@@ -1,8 +1,8 @@
 # VK_posting_pictures
 
-Script for posting images from [xkcd.com](https://xkcd.com) to the group [VK](https://vk.com).
+Script for posting images from [xkcd.com](https://xkcd.com) to the [VK](https://vk.com) group wall.
 
-Example: [xkcd_comics_fun](https://vk.com/xkcd_comics_fun)
+Group example: [xkcd_comics_fun](https://vk.com/xkcd_comics_fun)
 ### How to install
 
 Python3 should be already installed. Then use `pip` (or `pip3`, if there is a conflict with Python2) to install dependencies:
