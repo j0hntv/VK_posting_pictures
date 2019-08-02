@@ -11,7 +11,8 @@ def get_total_comics_number():
     url = 'https://xkcd.com/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
-    total_number = response.json().get('num')
+    response_json = response.json()
+    total_number = response_json.get('num')
     if total_number:
         logging.info(f'Total {total_number} comics')
         return total_number
@@ -23,10 +24,10 @@ def get_comics_data(comics_number):
     url = f'https://xkcd.com/{comics_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
-    json = response.json()
-    url = json.get('img')
-    title = json.get('safe_title')
-    alt = json.get('alt')
+    response_json = response.json()
+    url = response_json.get('img')
+    title = response_json.get('safe_title')
+    alt = response_json.get('alt')
     if all((url, title, alt)):
         logging.info(f'Image URL: {url}')
         logging.info(f'Title: {title}')
