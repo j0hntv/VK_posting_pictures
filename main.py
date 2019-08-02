@@ -125,7 +125,7 @@ def main():
     total_comics_number = get_total_comics_number()
     random_image_number = random.randint(1, total_comics_number+1)
     url, title, alt = get_comics_data(random_image_number)
-    image_name = url.split('/')[-1]
+    image_name = os.path.basename(url)
     save_image(url, image_name)
 
     upload_url = get_upload_url()
