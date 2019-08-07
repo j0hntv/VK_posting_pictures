@@ -11,11 +11,12 @@ def get_total_comics_number():
     response.raise_for_status()
     response_json = response.json()
     total_number = response_json.get('num')
-    if total_number:
-        logging.info(f'Total {total_number} comics')
-        return total_number
-    else:
+
+    if not total_number:
         raise requests.exceptions.HTTPError
+        logging.info(f'Total {total_number} comics')
+
+    return total_number    
 
 
 def get_comics_data(comics_number):
@@ -26,13 +27,16 @@ def get_comics_data(comics_number):
     url = response_json.get('img')
     title = response_json.get('safe_title')
     alt = response_json.get('alt')
-    if all((url, title, alt)):
-        logging.info(f'Image URL: {url}')
-        logging.info(f'Title: {title}')
-        logging.info(f'Alt: {alt}')
-        return (url, title, alt)
-    else:
+
+    if not all((url, title, alt)):
         raise requests.exceptions.HTTPError
+
+    logging.info(f'Image URL: {url}')
+    logging.info(f'Title: {title}')
+    logging.info(f'Alt: {alt}')
+    
+    return (url, title, alt)
+
 
 
 def save_image(url, name):
@@ -54,12 +58,13 @@ def get_upload_url(group_id, access_token, api_version):
     response = requests.get(url, params=payload)
     response.raise_for_status()
     response_json = response.json()
+
     if not response_json.get('error'):
         upload_url = response_json['response']['upload_url']
         logging.info('Upload URL received')
         return upload_url
-    else:
-        raise requests.exceptions.HTTPError
+
+    raise requests.exceptions.HTTPError
 
 
 def upload_image(url, image):
@@ -74,12 +79,12 @@ def upload_image(url, image):
     photo = response_json.get('photo')
     hash_ = response_json.get('hash')
 
-    if all((server, photo, hash_)):
-        logging.info('Server, photo, hash received')
-        return server, photo, hash_
-    else:
+    if not all((server, photo, hash_)):
         raise requests.exceptions.HTTPError
 
+    logging.info('Server, photo, hash received')
+    return server, photo, hash_
+        
 
 def save_wall_photo(server, photo, hash_, group_id, access_token, api_version):
     url = 'https://api.vk.com/method/photos.saveWallPhoto'
@@ -116,8 +121,9 @@ def post_wall(photo_id, owner_id, message, group_id, access_token, api_version):
     error = response.json().get('error')
     if not error:
         logging.info('Image successfully posted')
-    else:
-        raise requests.exceptions.HTTPError
+        return
+
+    raise requests.exceptions.HTTPError
 
 
 def main():
@@ -127,6 +133,8 @@ def main():
     group_id = os.getenv('GROUP_ID')
     access_token = os.getenv('ACCESS_TOKEN')
     api_version = 5.101
+
+    image_name = ''
 
     try:
         total_comics_number = get_total_comics_number()
