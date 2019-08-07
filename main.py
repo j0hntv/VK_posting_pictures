@@ -4,8 +4,6 @@ import logging
 import os
 from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.INFO, format='[%(levelname)s] - %(message)s')
-
 
 def get_total_comics_number():
     url = 'https://xkcd.com/info.0.json'
@@ -123,6 +121,13 @@ def post_wall(photo_id, owner_id, message):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format='[%(levelname)s] - %(message)s')
+
+    load_dotenv()
+    GROUP_ID = os.getenv('GROUP_ID')
+    ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
+    V = 5.101
+    
     try:
         total_comics_number = get_total_comics_number()
         random_image_number = random.randint(1, total_comics_number+1)
@@ -149,10 +154,6 @@ def main():
     
 
 if __name__ == "__main__":
-    load_dotenv()
-    GROUP_ID = os.getenv('GROUP_ID')
-    ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
-    V = 5.101
     main()
     
     
