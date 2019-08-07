@@ -49,7 +49,7 @@ def get_upload_url(GROUP_ID, ACCESS_TOKEN, V):
     payload = {
         'access_token': ACCESS_TOKEN,
         'group_id': GROUP_ID,
-        #'v': V
+        'v': V
         }
     response = requests.get(url, params=payload)
     response.raise_for_status()
