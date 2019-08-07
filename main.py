@@ -123,20 +123,29 @@ def post_wall(photo_id, owner_id, message):
 
 
 def main():
-    total_comics_number = get_total_comics_number()
-    random_image_number = random.randint(1, total_comics_number+1)
-    url, title, alt = get_comics_data(random_image_number)
-    image_name = os.path.basename(url)
-    save_image(url, image_name)
+    try:
+        total_comics_number = get_total_comics_number()
+        random_image_number = random.randint(1, total_comics_number+1)
+        url, title, alt = get_comics_data(random_image_number)
+        image_name = os.path.basename(url)
+        save_image(url, image_name)
 
-    upload_url = get_upload_url()
-    server, photo, hash_ = upload_image(upload_url, image_name)
-    photo_id, owner_id = save_wall_photo(server, photo, hash_)
-    message = f'{title}\n---\n{alt}'
-    post_wall(photo_id, owner_id, message)
+        upload_url = get_upload_url()
+        server, photo, hash_ = upload_image(upload_url, image_name)
+        photo_id, owner_id = save_wall_photo(server, photo, hash_)
+        message = f'{title}\n---\n{alt}'
+        post_wall(photo_id, owner_id, message)
 
-    os.remove(image_name)
-    logging.info('Image removed')
+        os.remove(image_name)
+        logging.info('Image removed')
+
+    except requests.exceptions.HTTPError as error:
+        logging.error(error)
+    
+    finally:
+        if os.path.isfile(image_name)
+            os.remove(image_name)
+            logging.info('Image removed')
     
 
 if __name__ == "__main__":
@@ -144,8 +153,7 @@ if __name__ == "__main__":
     GROUP_ID = os.getenv('GROUP_ID')
     ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
     V = 5.101
-    try:
-        main()
-    except requests.exceptions.HTTPError as error:
-        logging.error(error)
+    main()
+    
+    
     
