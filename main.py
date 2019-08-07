@@ -44,12 +44,12 @@ def save_image(url, name):
     logging.info(f'Saved <{name}>')
 
 
-def get_upload_url(GROUP_ID, ACCESS_TOKEN, V):
+def get_upload_url(group_id, access_token, api_version):
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
     payload = {
-        'access_token': ACCESS_TOKEN,
-        'group_id': GROUP_ID,
-        'v': V
+        'access_token': access_token,
+        'group_id': group_id,
+        'v': api_version
         }
     response = requests.get(url, params=payload)
     response.raise_for_status()
@@ -81,15 +81,15 @@ def upload_image(url, image):
         raise requests.exceptions.HTTPError
 
 
-def save_wall_photo(server, photo, hash_, GROUP_ID, ACCESS_TOKEN, V):
+def save_wall_photo(server, photo, hash_, group_id, access_token, api_version):
     url = 'https://api.vk.com/method/photos.saveWallPhoto'
     payload = {
         'server': server,
         'photo': photo,
         'hash': hash_,
-        'group_id': GROUP_ID,
-        'access_token': ACCESS_TOKEN,
-        'v': V
+        'group_id': group_id,
+        'access_token': access_token,
+        'v': api_version
     }
     response = requests.post(url, params=payload)
     response.raise_for_status()
@@ -102,14 +102,14 @@ def save_wall_photo(server, photo, hash_, GROUP_ID, ACCESS_TOKEN, V):
         raise requests.exceptions.HTTPError
 
 
-def post_wall(photo_id, owner_id, message, GROUP_ID, ACCESS_TOKEN, V):
+def post_wall(photo_id, owner_id, message, group_id, access_token, api_version):
     url = 'https://api.vk.com/method/wall.post'
     payload = {
-        'owner_id': f'-{GROUP_ID}',
-        'access_token': ACCESS_TOKEN,
+        'owner_id': f'-{group_id}',
+        'access_token': access_token,
         'attachments': f'photo{owner_id}_{photo_id}',
         'message': message,
-        'v': V
+        'v': api_version
     }
     response = requests.post(url, params=payload)
     response.raise_for_status()
@@ -124,9 +124,9 @@ def main():
     logging.basicConfig(level=logging.INFO, format='[%(levelname)s] - %(message)s')
 
     load_dotenv()
-    GROUP_ID = os.getenv('GROUP_ID')
-    ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
-    V = 5.101
+    group_id = os.getenv('GROUP_ID')
+    access_token = os.getenv('ACCESS_TOKEN')
+    api_version = 5.101
 
     try:
         total_comics_number = get_total_comics_number()
@@ -135,11 +135,11 @@ def main():
         image_name = os.path.basename(url)
         save_image(url, image_name)
 
-        upload_url = get_upload_url(GROUP_ID, ACCESS_TOKEN, V)
+        upload_url = get_upload_url(group_id, access_token, api_version)
         server, photo, hash_ = upload_image(upload_url, image_name)
-        photo_id, owner_id = save_wall_photo(server, photo, hash_, GROUP_ID, ACCESS_TOKEN, V)
+        photo_id, owner_id = save_wall_photo(server, photo, hash_, group_id, access_token, api_version)
         message = f'{title}\n---\n{alt}'
-        post_wall(photo_id, owner_id, message, GROUP_ID, ACCESS_TOKEN, V)
+        post_wall(photo_id, owner_id, message, group_id, access_token, api_version)
 
         os.remove(image_name)
         logging.info('Image removed')
