@@ -44,12 +44,12 @@ def save_image(url, name):
     logging.info(f'Saved <{name}>')
 
 
-def get_upload_url():
+def get_upload_url(GROUP_ID, ACCESS_TOKEN, V):
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
     payload = {
         'access_token': ACCESS_TOKEN,
         'group_id': GROUP_ID,
-        'v': V
+        #'v': V
         }
     response = requests.get(url, params=payload)
     response.raise_for_status()
@@ -81,7 +81,7 @@ def upload_image(url, image):
         raise requests.exceptions.HTTPError
 
 
-def save_wall_photo(server, photo, hash_):
+def save_wall_photo(server, photo, hash_, GROUP_ID, ACCESS_TOKEN, V):
     url = 'https://api.vk.com/method/photos.saveWallPhoto'
     payload = {
         'server': server,
@@ -102,7 +102,7 @@ def save_wall_photo(server, photo, hash_):
         raise requests.exceptions.HTTPError
 
 
-def post_wall(photo_id, owner_id, message):
+def post_wall(photo_id, owner_id, message, GROUP_ID, ACCESS_TOKEN, V):
     url = 'https://api.vk.com/method/wall.post'
     payload = {
         'owner_id': f'-{GROUP_ID}',
@@ -127,7 +127,7 @@ def main():
     GROUP_ID = os.getenv('GROUP_ID')
     ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
     V = 5.101
-    
+
     try:
         total_comics_number = get_total_comics_number()
         random_image_number = random.randint(1, total_comics_number+1)
@@ -135,11 +135,11 @@ def main():
         image_name = os.path.basename(url)
         save_image(url, image_name)
 
-        upload_url = get_upload_url()
+        upload_url = get_upload_url(GROUP_ID, ACCESS_TOKEN, V)
         server, photo, hash_ = upload_image(upload_url, image_name)
-        photo_id, owner_id = save_wall_photo(server, photo, hash_)
+        photo_id, owner_id = save_wall_photo(server, photo, hash_, GROUP_ID, ACCESS_TOKEN, V)
         message = f'{title}\n---\n{alt}'
-        post_wall(photo_id, owner_id, message)
+        post_wall(photo_id, owner_id, message, GROUP_ID, ACCESS_TOKEN, V)
 
         os.remove(image_name)
         logging.info('Image removed')
@@ -148,7 +148,7 @@ def main():
         logging.error(error)
     
     finally:
-        if os.path.isfile(image_name)
+        if os.path.isfile(image_name):
             os.remove(image_name)
             logging.info('Image removed')
     
