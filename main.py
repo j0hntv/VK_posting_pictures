@@ -38,7 +38,6 @@ def get_comics_data(comics_number):
     return (url, title, alt)
 
 
-
 def save_image(url, name):
     response = requests.get(url)
     response.raise_for_status()
