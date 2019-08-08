@@ -149,8 +149,6 @@ def main():
         message = f'{title}\n---\n{alt}'
         post_wall(photo_id, owner_id, message, group_id, access_token, api_version)
 
-        os.remove(image_name)
-        logging.info('Image removed')
 
     except requests.exceptions.HTTPError as error:
         logging.error(error)
